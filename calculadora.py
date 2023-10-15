@@ -76,7 +76,7 @@ def total(vaolr1, valor, resu):
 
 
 janela = Tk()
-janela.title("teste do app")
+janela.title("Calculadora")
 janela.geometry('350x450')
 janela.configure(background='#dde')
 
