@@ -1,12 +1,37 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import bancotree
+
+def popular():
+    tv.delete(*tv.get_children())
+    vquery="SELECT * FROM tabela_dados order by ID"
+    linhas=bancotree.dql(vquery)
+    for i in linhas:
+        tv.insert("","end",values=i)
+
+def pesquisar():
+    tv.delete(*tv.get_children())
+    vquery="SELECT * FROM tabela_dados WHERE NOME LIKE '%"+pesq.get()+"%'"
+    linhas=bancotree.dql(vquery)
+    for i in linhas:
+        tv.insert("","end",values=i)
 
 def inserir():
+    if vid.get() != "" and vn.get() != "" and  vf.get() != "":
+        print("Dados gravados")
+        vnome = vn.get()
+        vidade = vid.get()
+        vOBS = vf.get()
+        vquery = "INSERT INTO tabela_dados (ID, NOME, TELEFONE) VALUES ('"+vidade+"', '"+vnome+"', '"+vOBS+"')"
+        bancotree.dml(vquery) 
+    else:
+        print("ERRO")
+    ############
     if vid.get() == "" or vn.get() == "" or  vf.get() == "":
         messagebox.showinfo(title="ERRO", message="campo não preencido")
         return
-    tv.insert("","end",values=(vid.get(),vn.get(),vf.get()))
+    popular()
     vid.delete(0,END)
     vn.delete(0,END)
     vf.delete(0,END)
@@ -14,15 +39,25 @@ def inserir():
         
 
 def deletar():
-    print()
+    try:
+        itemSele=tv.selection()[0]
+        tv.delete(itemSele)
+    except:
+        messagebox.showinfo(title="ERRO", message="Selecione o elemento para deleta-lo")    
 
 def obter():
-    print()    
+    try:
+        itemSele=tv.selection()[0]
+        valores=tv.item(itemSele,"values")
+        print(valores)
+        #especifico print(valores[0,1 ou 2])
+    except:
+        messagebox.showinfo(title="ERRO", message="Selecione o elemento a ser obtido")        
 
 
 janela = Tk()
 janela.title("teste do app")
-janela.geometry('600x300')
+janela.geometry('420x350')
 janela.configure(background='#dde')
 
 
@@ -55,6 +90,13 @@ btn_de=Button(janela,text="deletar",command=deletar)
 btn_de.grid(column=1,row=2)
 btn_ob=Button(janela,text="obter",command=obter)
 btn_ob.grid(column=2,row=2)
+
+btn_pe=Button(janela,text="pesquisar",command=pesquisar)
+btn_pe.grid(column=1,row=4)
+pesq = Entry(janela)
+pesq.grid(column=2,row=4)
+
+Button(janela,text="mostrar todos",command=popular).grid(column=0,row=4)
 
 
 janela.mainloop()
